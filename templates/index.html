@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>언제CLE GPT</title>
+    <style>
+        @font-face {
+            font-family: 'Pretendard-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+            font-weight: 100;
+            font-style: normal;
+
+        }
+
+        body {
+            font-family: 'Pretendard-Regular';
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+            background-color: #262626;
+            color: #eaeaea;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #202123;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .chat-container {
+            flex: 5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 120px;
+        }
+
+        .chat-box {
+            width: 100%;
+            max-width: 600px;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            background-color: #7f7f7f;
+            border-radius: 8px;
+            padding: 20px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 20px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background-color: #3a3b3c;
+            align-self: flex-end;
+        }
+
+        .assistant-message {
+            background-color: #575859;
+            align-self: flex-start;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-container {
+            display: flex;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        input[type="text"] {
+            font-size: 15px;
+            flex: 1;
+            padding: 15px;
+            border: 1px solid #555;
+            border-radius: 30px;
+            background-color: #303339;
+            color: #eaeaea;
+            outline: none;
+            box-sizing: border-box;
+            margin-right: 5px;
+        }
+
+        button {
+            font-size: 20px;
+            width: 45px;
+            height: 45px;
+            border: none;
+            border-radius: 50%;
+            background-color: #fff;
+            color: black;
+            cursor: pointer;
+            outline: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        .chat-box::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .chat-box::-webkit-scrollbar-track {
+            background: #bfbfbf;
+        }
+        
+        .chat-box::-webkit-scrollbar-thumb {
+            background-color: #303339;
+        }
+
+    </style>
+</head>
+<body>
+    
+    <div class="chat-container">
+        <div class="chat-box" id="chat-box">
+            <!-- 초기 메시지 표시 -->
+            <div class="message assistant-message"><span>안녕하세요! 무엇을 도와드릴까요?</span></div>
+        </div>
+        <div class="input-container">
+            <input type="text" id="question" name="question" placeholder="메시지를 입력하세요..." required>
+            <button id="send-btn">&#10140;</button>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('send-btn').addEventListener('click', async function() {
+            const questionInput = document.getElementById('question');
+            const chatBox = document.getElementById('chat-box');
+
+            if (questionInput.value.trim() !== '') {
+                const userMessage = document.createElement('div');
+                userMessage.className = 'message user-message';
+                userMessage.textContent = questionInput.value;
+                chatBox.appendChild(userMessage);
+
+                const response = await fetch('/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `question=${encodeURIComponent(questionInput.value)}`,
+                });
+
+                const result = await response.json();
+
+                const aiMessage = document.createElement('div');
+                aiMessage.className = 'message assistant-message';
+                aiMessage.innerHTML = `<span>AI: ${result.response}</span>`;
+                chatBox.appendChild(aiMessage);
+
+                chatBox.scrollTop = chatBox.scrollHeight; 
+                questionInput.value = '';
+            }
+        });
+
+        document.getElementById('question').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                document.getElementById('send-btn').click();
+                event.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
