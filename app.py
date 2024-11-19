@@ -1,14 +1,13 @@
 from flask import Flask, request, jsonify, render_template
 import sqlite3
-import os
 import openai
+import os
 from dotenv import load_dotenv
 
 load_dotenv()
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 app = Flask(__name__)
-
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def init_db():
     conn = sqlite3.connect('history.db')
@@ -47,12 +46,12 @@ def index():
         
         chat_history = get_chat_history()
         
-        response = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model="gpt-4o",
             messages=chat_history
         )
         
-        result = response.choices[0].message['content']
+        result = response.choices[0].message.content
         save_message('assistant', result)
         
         return jsonify({'response': result})
