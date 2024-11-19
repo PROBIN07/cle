@@ -8,7 +8,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-client = openai(api_key=os.getenv("OPENAI_API_KEY"))
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def init_db():
     conn = sqlite3.connect('history.db')
@@ -47,12 +47,12 @@ def index():
         
         chat_history = get_chat_history()
         
-        response = client.chat.completions.create(
+        response = openai.ChatCompletion.create(
             model="gpt-4o",
             messages=chat_history
         )
         
-        result = response.choices[0].message.content
+        result = response.choices[0].message['content']
         save_message('assistant', result)
         
         return jsonify({'response': result})
