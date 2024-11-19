@@ -1,14 +1,14 @@
 from flask import Flask, request, jsonify, render_template
 import sqlite3
 import os
-from openai import OpenAI
+import openai
 from dotenv import load_dotenv
 
 load_dotenv()
 
 app = Flask(__name__)
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = openai(api_key=os.getenv("OPENAI_API_KEY"))
 
 def init_db():
     conn = sqlite3.connect('history.db')
